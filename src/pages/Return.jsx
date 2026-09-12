@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Swal from 'sweetalert2';
@@ -9,8 +9,9 @@ const SCRIPT_URL = import.meta.env.VITE_SCRIPT_URL;
 
 export default function Return() {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const [bookingId, setBookingId] = useState('');
+  const [bookingId, setBookingId] = useState(location.state?.bookingId || '');
   const [returnDatetime, setReturnDatetime] = useState(new Date());
   const [formData, setFormData] = useState({
     hoursBefore: '',
@@ -18,6 +19,11 @@ export default function Return() {
     batteryBefore: '',
     batteryAfter: ''
   });
+
+  useEffect(() => {
+    const clock = setInterval(() => setReturnDatetime(new Date()), 1000);
+    return () => clearInterval(clock);
+  }, []);
 
   const sanitizeHourInput = (value) => {
     const cleaned = value.replace(/[^0-9.]/g, '');
@@ -163,14 +169,16 @@ export default function Return() {
         <label style={labelStyle}>เวลาที่ส่งคืนรถจริง <span style={{color: 'red'}}>*</span></label>
         <DatePicker 
           selected={returnDatetime} 
-          onChange={(date) => setReturnDatetime(date)} 
+          onChange={(date) => setReturnDatetime(date)}
+          disabled
           showTimeSelect 
           timeFormat="HH:mm" 
           timeIntervals={15} 
           dateFormat="dd/MM/yyyy HH:mm"
           timeCaption="เวลา" 
-          customInput={<input style={inputStyle} />}
+          customInput={<input style={{ ...inputStyle, backgroundColor: '#e9ecef', cursor: 'not-allowed' }} />}
         />
+        <small style={{ display: 'block', marginTop: '6px', color: '#777' }}>ระบบกำหนดเวลาปัจจุบันให้อัตโนมัติ ไม่สามารถแก้ไขได้</small>
 
         <div style={fieldRowStyle} className="responsive-row">
           <div style={fieldColStyle} className="responsive-col">

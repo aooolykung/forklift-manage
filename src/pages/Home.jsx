@@ -28,9 +28,14 @@ const fetchData = async () => {
       const formattedData = result.data.map(item => ({
         id: item.bookingId,       // แปลง bookingId เป็น id
         title: item.driverName,   // แปลง driverName เป็น title
+        userId: item.userId,
+        phone: item.phone,
+        licenseNo: item.licenseNo,
+        costCenter: item.costCenter,
         purpose: item.purpose,
         start: item.startDatetime,// แปลง startDatetime เป็น start
         end: item.endDatetime,    // แปลง endDatetime เป็น end
+        returnDatetime: item.returnDatetime,
         status: item.status
       }));
 
@@ -65,7 +70,7 @@ const fetchData = async () => {
       if (isNaN(d.getTime())) return dateStr;
       return d.toLocaleString('th-TH', { 
         day: '2-digit', month: '2-digit', year: 'numeric',
-        hour: '2-digit', minute: '2-digit'
+        hour: '2-digit', minute: '2-digit', hourCycle: 'h23'
       });
     } catch {
       return dateStr;
@@ -166,9 +171,49 @@ const fetchData = async () => {
                     <span style={{ minWidth: '85px', color: '#666' }}><strong>สิ้นสุด:</strong></span> 
                     <span>{formatDateTime(item.end)}</span>
                   </div>
-                </div>
 
-              </div>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <span style={{ minWidth: '85px', color: '#666' }}><strong>คืนรถจริง:</strong></span>
+                    <span>{item.returnDatetime && item.returnDatetime !== '-' ? formatDateTime(item.returnDatetime) : 'ยังไม่คืนรถ'}</span>
+                  </div>
+                 </div>
+
+                 <div style={{ display: 'flex', gap: '8px', marginTop: 'auto' }}>
+                   <button
+                     type="button"
+                     onClick={() => navigate(`/edit/${encodeURIComponent(item.id)}`, { state: { booking: item } })}
+                     style={{
+                       flex: 1,
+                       padding: '9px 12px',
+                       backgroundColor: '#f8f9fa',
+                       color: '#0056b3',
+                       border: '1px solid #007bff',
+                       borderRadius: '6px',
+                       cursor: 'pointer',
+                       fontWeight: 'bold'
+                     }}
+                   >
+                     ✏️ แก้ไข
+                   </button>
+                   <button
+                     type="button"
+                     onClick={() => navigate('/return', { state: { bookingId: item.id } })}
+                     style={{
+                       flex: 1,
+                       padding: '9px 12px',
+                       backgroundColor: '#dc3545',
+                       color: '#fff',
+                       border: '1px solid #dc3545',
+                       borderRadius: '6px',
+                       cursor: 'pointer',
+                       fontWeight: 'bold'
+                     }}
+                   >
+                     🔑 คืนรถ
+                   </button>
+                 </div>
+
+               </div>
             );
           })}
         </div>
