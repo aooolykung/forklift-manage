@@ -7,7 +7,7 @@ import Swal from 'sweetalert2';
 
 registerLocale('th', th);
 
-const SCRIPT_URL = import.meta.env.VITE_SCRIPT_URL;
+const SCRIPT_URL = '/api/bookings';
 
 const emptyForm = {
   userId: '',
@@ -86,7 +86,7 @@ export default function Edit() {
       try {
         const response = await fetch(SCRIPT_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: 'get_booking', bookingId })
         });
         const result = await response.json();
@@ -186,7 +186,7 @@ export default function Edit() {
     try {
       const response = await fetch(SCRIPT_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'update_booking',
           bookingId,

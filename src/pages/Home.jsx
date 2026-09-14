@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// *** อย่าลืมนำ URL Web App ของคุณมาใส่ตรงนี้ในไฟล์ .env นะครับ ***
-const SCRIPT_URL = import.meta.env.VITE_SCRIPT_URL;
+// เรียก Vercel API เพื่อบันทึกข้อมูลและส่งการแจ้งเตือน
+const SCRIPT_URL = '/api/bookings';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ const fetchData = async () => {
   try {
     const response = await fetch(SCRIPT_URL, {
       method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "get" }) // ใช้ action มาตรฐาน
     });
     const result = await response.json();

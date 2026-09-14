@@ -17,8 +17,8 @@ const dateWithTime = (date, timeText) => {
   return updated;
 };
 
-// *** อย่าลืมนำ URL Web App ของคุณมาใส่ตรงนี้ในไฟล์ .env นะครับ ***
-const SCRIPT_URL = import.meta.env.VITE_SCRIPT_URL;
+// เรียก Vercel API เพื่อบันทึกข้อมูลและส่งการแจ้งเตือน
+const SCRIPT_URL = '/api/bookings';
 
 export default function Book() {
   const navigate = useNavigate();
@@ -194,7 +194,7 @@ export default function Book() {
 
       const response = await fetch(SCRIPT_URL, {
         method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
       
@@ -204,7 +204,7 @@ export default function Book() {
         Swal.fire({
           icon: 'success',
           title: 'บันทึกการจองสำเร็จ!',
-          text: `รหัสการจองของคุณคือ: ${result.bookingId}`,
+          text: `รหัสการจองของคุณคือ: ${result.bookingId}${result.notifications?.some(item => !item.success) ? '\nบันทึกสำเร็จ แต่ส่งข้อความบางปลายทางไม่สำเร็จ กรุณาแจ้งผู้ดูแล' : ''}`,
           confirmButtonColor: '#28a745',
           confirmButtonText: 'กลับสู่หน้าหลัก'
         }).then((res) => {
