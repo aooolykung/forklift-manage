@@ -5,9 +5,6 @@ export async function send(entries) {
   return Promise.all(entries.map(async ([target, create]) => {
     try {
       const request = create();
-      if (target === 'line_forklift_group' && !/^C[0-9a-f]{32}$/i.test(JSON.parse(request.payload).to)) {
-        throw new Error('Invalid LINE_FORKLIFT_GROUP_ID');
-      }
       const response = await fetch(request.url, {
         method: 'POST', headers: { ...request.headers, 'Content-Type': 'application/json' },
         body: request.payload, signal: AbortSignal.timeout(10000),
@@ -25,7 +22,6 @@ export async function send(entries) {
 export function bookingNotifications(data) {
   const url = action => `${env('APP_URL').replace(/\/$/, '')}/api/approval?id=${encodeURIComponent(data.bookingId)}&action=${action}&signature=${signAction(data.bookingId, action)}`;
   return send([
-    ['line_forklift_group', () => payloads.createLineForkliftBookingRequest(data)],
     ['line_admin', () => payloads.createLineBookingRequest(data)],
     ['discord', () => payloads.createDiscordBookingRequest(data, url('approve'), url('reject'))],
   ]);
@@ -33,7 +29,6 @@ export function bookingNotifications(data) {
 
 export function returnNotifications(data) {
   return send([
-    ['line_forklift_group', () => payloads.createLineForkliftReturnRequest(data)],
     ['line_admin', () => payloads.createLineReturnRequest(data)],
     ['discord', () => payloads.createDiscordReturnRequest(data)],
   ]);

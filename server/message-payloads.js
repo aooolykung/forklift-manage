@@ -91,27 +91,6 @@ function createLineBookingRequest(bookingData) {
   };
 }
 
-function createLineForkliftBookingRequest(bookingData) {
-  var messageText = "รายการยืมรถforklift\n" +
-                    "รหัสรายการ : " + bookingData.bookingId + "\n" +
-                    "ผู้ยืม : " + bookingData.driverName + "\n" +
-                    "วัตถุประสงค์ : " + bookingData.purpose + "\n" +
-                    "เริ่ม : " + bookingData.startDatetime + "\n" +
-                    "สิ้นสุด : " + bookingData.endDatetime;
-
-  return {
-    "url": "https://api.line.me/v2/bot/message/push",
-    "method": "post",
-    "headers": { "Authorization": "Bearer " + env("LINE_ACCESS_TOKEN") },
-    "contentType": "application/json",
-    "payload": JSON.stringify({
-      "to": env("LINE_FORKLIFT_GROUP_ID"),
-      "messages": [{ "type": "text", "text": messageText }]
-    }),
-    "muteHttpExceptions": true
-  };
-}
-
 function createLineReturnRequest(returnData) {
   var messageText = "🚗 แจ้งคืนรถสำเร็จ\n\n" +
                     "รหัสจอง: " + returnData.bookingId + "\n" +
@@ -160,25 +139,6 @@ function createDiscordReturnRequest(returnData) {
     "method": "post",
     "contentType": "application/json",
     "payload": JSON.stringify(payload),
-    "muteHttpExceptions": true
-  };
-}
-
-function createLineForkliftReturnRequest(returnData) {
-  var messageText = "รายการคืนรถforklift\n" +
-                    "รหัสรายการ : " + returnData.bookingId + "\n" +
-                    "ผู้คืน : " + returnData.driverName + "\n" +
-                    "คืนรถจริง : " + returnData.returnDatetime;
-
-  return {
-    "url": "https://api.line.me/v2/bot/message/push",
-    "method": "post",
-    "headers": { "Authorization": "Bearer " + env("LINE_ACCESS_TOKEN") },
-    "contentType": "application/json",
-    "payload": JSON.stringify({
-      "to": env("LINE_FORKLIFT_GROUP_ID"),
-      "messages": [{ "type": "text", "text": messageText }]
-    }),
     "muteHttpExceptions": true
   };
 }
@@ -250,4 +210,4 @@ function createLineActionRequest(bookingId, driverName, purpose, statusText) {
   };
 }
 
-export { createDiscordBookingRequest, createLineBookingRequest, createLineForkliftBookingRequest, createLineReturnRequest, createDiscordReturnRequest, createLineForkliftReturnRequest, createLineReplyRequest, createDiscordActionRequest, createLineActionRequest };
+export { createDiscordBookingRequest, createLineBookingRequest, createLineReturnRequest, createDiscordReturnRequest, createLineReplyRequest, createDiscordActionRequest, createLineActionRequest };
