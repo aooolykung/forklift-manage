@@ -6,8 +6,23 @@ function createGatewayRequest(message) {
     headers: {
       Authorization: `Bearer ${env('LINE_GATEWAY_API_KEY')}`,
     },
-    payload: JSON.stringify({ message }),
+    payload: JSON.stringify({
+      target: 'engineering',
+      message,
+    }),
   };
+}
+
+export function createGatewayActionRequest(bookingId, driverName, purpose, statusText) {
+  const message = [
+    'อัปเดตสถานะการจอง forklift',
+    `รหัสจอง: ${bookingId}`,
+    `ผู้จอง: ${driverName}`,
+    `วัตถุประสงค์: ${purpose}`,
+    `สถานะ: ${statusText}`,
+  ].join('\n');
+
+  return createGatewayRequest(message);
 }
 
 export function createGatewayBookingRequest(bookingData) {
