@@ -1,4 +1,5 @@
 import * as payloads from './message-payloads.js';
+import { createGatewayBookingRequest, createGatewayReturnRequest } from './line-gateway.js';
 import { env, signAction, storage } from './shared.js';
 
 export async function send(entries) {
@@ -19,19 +20,27 @@ export async function send(entries) {
   }));
 }
 
-export function bookingNotifications(data) {
-  const url = action => `${env('APP_URL').replace(/\/$/, '')}/api/approval?id=${encodeURIComponent(data.bookingId)}&action=${action}&signature=${signAction(data.bookingId, action)}`;
-  return send([
-    ['line_admin', () => payloads.createLineBookingRequest(data)],
-    ['discord', () => payloads.createDiscordBookingRequest(data, url('approve'), url('reject'))],
-  ]);
+function hideGatewayResult(results) {
+  return results.filter(({ target }) => target !== 'line_gateway');
 }
 
-export function returnNotifications(data) {
-  return send([
+export async function bookingNotifications(data) {
+  const url = action => `${env('APP_URL').replace(/\/$/, '')}/api/approval?id=${encodeURIComponent(data.bookingId)}&action=${action}&signature=${signAction(data.bookingId, action)}`;
+  const results = await send([
+    ['line_admin', () => payloads.createLineBookingRequest(data)],
+    ['line_gateway', () => createGatewayBookingRequest(data)],
+    ['discord', () => payloads.createDiscordBookingRequest(data, url('approve'), url('reject'))],
+  ]);
+  return hideGatewayResult(results);
+}
+
+export async function returnNotifications(data) {
+  const results = await send([
     ['line_admin', () => payloads.createLineReturnRequest(data)],
+    ['line_gateway', () => createGatewayReturnRequest(data)],
     ['discord', () => payloads.createDiscordReturnRequest(data)],
   ]);
+  return hideGatewayResult(results);
 }
 
 export async function decide(bookingId, decision, replyToken) {
