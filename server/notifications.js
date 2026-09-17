@@ -45,13 +45,16 @@ export async function decide(bookingId, decision, replyToken) {
   const result = await storage({ action: 'booking_action', bookingId, decision });
   if (result.status === 'success' && result.changed) {
     const { driverName, purpose, statusText } = result.notificationData;
-    result.notifications = await send([
+    const notifications = [
       ['discord', () => payloads.createDiscordActionRequest(bookingId, driverName, purpose, statusText)],
       ['line_admin', () => replyToken
         ? payloads.createLineReplyRequest(replyToken, bookingId, driverName, purpose, statusText)
         : payloads.createLineActionRequest(bookingId, driverName, purpose, statusText)],
-      ['line_gateway', () => createGatewayActionRequest(bookingId, driverName, purpose, statusText)],
-    ]);
+    ];
+    if (decision !== 'approve') {
+      notifications.push(['line_gateway', () => createGatewayActionRequest(bookingId, driverName, purpose, statusText)]);
+    }
+    result.notifications = await send(notifications);
   }
   return result;
 }
