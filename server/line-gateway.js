@@ -1,19 +1,19 @@
 import { env } from './shared.js';
 
-function createGatewayRequest(message) {
+function createGatewayRequest(message, target = 'engineering') {
   return {
     url: `${env('LINE_GATEWAY_URL').replace(/\/+$/, '')}/send`,
     headers: {
       Authorization: `Bearer ${env('LINE_GATEWAY_API_KEY')}`,
     },
     payload: JSON.stringify({
-      target: 'engineering',
+      target,
       message,
     }),
   };
 }
 
-export function createGatewayActionRequest(bookingId, driverName, purpose, statusText) {
+export function createGatewayActionRequest(bookingId, driverName, purpose, statusText, target = 'engineering') {
   const message = [
     'อัปเดตสถานะการจอง forklift',
     `รหัสจอง: ${bookingId}`,
@@ -22,7 +22,7 @@ export function createGatewayActionRequest(bookingId, driverName, purpose, statu
     `สถานะ: ${statusText}`,
   ].join('\n');
 
-  return createGatewayRequest(message);
+  return createGatewayRequest(message, target);
 }
 
 export function createGatewayBookingRequest(bookingData) {
@@ -38,7 +38,7 @@ export function createGatewayBookingRequest(bookingData) {
   return createGatewayRequest(message);
 }
 
-export function createGatewayReturnRequest(returnData) {
+export function createGatewayReturnRequest(returnData, target = 'engineering') {
   const message = [
     '🚗 แจ้งคืนรถสำเร็จ',
     '',
@@ -53,5 +53,5 @@ export function createGatewayReturnRequest(returnData) {
     'สถานะ: คืนรถแล้ว',
   ].join('\n');
 
-  return createGatewayRequest(message);
+  return createGatewayRequest(message, target);
 }

@@ -24,7 +24,7 @@ const fetchData = async () => {
     const result = await response.json();
     
     if (result.status === "success") {
-      // แปลงข้อมูลที่ได้จาก GAS ให้เข้ากับหน้าตา Card ของ React ตรงนี้ได้เลย
+      // API เรียงรายการที่ยังไม่คืนก่อน แล้วเรียงเวลาเริ่มล่าสุดจาก Supabase
       const formattedData = result.data.map(item => ({
         id: item.bookingId,       // แปลง bookingId เป็น id
         title: item.driverName,   // แปลง driverName เป็น title
@@ -39,8 +39,7 @@ const fetchData = async () => {
         status: item.status
       }));
 
-      const latestBookings = formattedData.reverse().slice(0, 3);
-      setBookings(latestBookings); 
+      setBookings(formattedData.slice(0, 5));
     }
   } catch (error) {
     console.error("Error fetching data", error);
@@ -51,7 +50,7 @@ const fetchData = async () => {
   // ฟังก์ชันกำหนดสีและไอคอนของป้ายสถานะ
   const getStatusStyle = (status) => {
     if (status === 'รออนุมัติ') return { icon: '⏳', color: '#856404', bg: '#fff3cd', border: '#ffeeba' }; 
-    if (status === 'อนุมัติแล้ว' || status === 'กำลังยืม') return { icon: '✅', color: '#155724', bg: '#d4edda', border: '#c3e6cb' }; 
+    if (status === 'อนุมัติ' || status === 'อนุมัติแล้ว' || status === 'กำลังยืม') return { icon: '✅', color: '#155724', bg: '#d4edda', border: '#c3e6cb' };
     return { icon: '🔹', color: '#004085', bg: '#cce5ff', border: '#b8daff' }; 
   };
 
@@ -81,7 +80,7 @@ const fetchData = async () => {
     <div style={{ padding: '20px', maxWidth: '1000px', margin: '0 auto', fontFamily: 'sans-serif' }}>
       
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', paddingBottom: '15px', borderBottom: '1px solid #ddd', flexWrap: 'wrap', gap: '10px' }}>
-        <h2 style={{ margin: 0, color: '#333' }}>📋 3 รายการล่าสุด</h2>
+        <h2 style={{ margin: 0, color: '#333' }}>📋 5 รายการล่าสุด (รายการยังไม่คืนก่อน)</h2>
         
         <div style={{ display: 'flex', gap: '10px' }}>
           <button 

@@ -12,7 +12,21 @@ dist
 dist-ssr
 *.local
 .env
+.env.*
 .env.example
+.vercel
+
+# Local reports and exports
+message_overview_*.csv
+
+# Local setup, infrastructure, and deployment references
+.env.example
+รหัส.gs
+SETUP.md
+LINE_ENGINEERING_GROUP_VERCEL.md
+SUPABASE_SETUP.md
+supabase-schema.sql
+New folder (4)/
 
 # Editor directories and files
 .vscode/*
@@ -24,7 +38,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-รหัส.gs
-SETUP.md
-LINE_ENGINEERING_GROUP_VERCEL.md

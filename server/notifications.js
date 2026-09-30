@@ -35,8 +35,8 @@ export async function bookingNotifications(data) {
 
 export async function returnNotifications(data) {
   return send([
-    ['line_admin', () => payloads.createLineReturnRequest(data)],
     ['line_gateway', () => createGatewayReturnRequest(data)],
+    ['service_en_alert', () => createGatewayReturnRequest(data, 'service_en_alert')],
     ['discord', () => payloads.createDiscordReturnRequest(data)],
   ]);
 }
@@ -47,10 +47,18 @@ export async function decide(bookingId, decision, replyToken) {
     const { driverName, purpose, statusText } = result.notificationData;
     const notifications = [
       ['discord', () => payloads.createDiscordActionRequest(bookingId, driverName, purpose, statusText)],
-      ['line_admin', () => replyToken
-        ? payloads.createLineReplyRequest(replyToken, bookingId, driverName, purpose, statusText)
-        : payloads.createLineActionRequest(bookingId, driverName, purpose, statusText)],
     ];
+    if (replyToken) {
+      notifications.push([
+        'line_admin',
+        () => payloads.createLineReplyRequest(replyToken, bookingId, driverName, purpose, statusText),
+      ]);
+    } else {
+      notifications.push([
+        'service_en_alert',
+        () => createGatewayActionRequest(bookingId, driverName, purpose, statusText, 'service_en_alert'),
+      ]);
+    }
     if (decision !== 'approve') {
       notifications.push(['line_gateway', () => createGatewayActionRequest(bookingId, driverName, purpose, statusText)]);
     }
