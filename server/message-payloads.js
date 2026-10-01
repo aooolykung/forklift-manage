@@ -1,4 +1,5 @@
 import { env } from "./shared.js";
+import { formatThaiDateTime } from "./date-time.js";
 
 function createDiscordBookingRequest(bookingData, approveUrl, rejectUrl) {
   var payload = {
@@ -53,8 +54,8 @@ function createLineBookingRequest(bookingData) {
               { "type": "text", "text": "ผู้จอง: " + bookingData.driverName },
               { "type": "text", "text": "เลขที่ใบอนุญาต: " + bookingData.licenseNo },
               { "type": "text", "text": "วัตถุประสงค์: " + bookingData.purpose },
-              { "type": "text", "text": "เริ่ม: " + bookingData.startDatetime, "size": "sm", "color": "#666666", "wrap": true },
-              { "type": "text", "text": "สิ้นสุด: " + bookingData.endDatetime, "size": "sm", "color": "#666666", "wrap": true }
+              { "type": "text", "text": "เริ่ม: " + formatThaiDateTime(bookingData.startDatetime), "size": "sm", "color": "#666666", "wrap": true },
+              { "type": "text", "text": "สิ้นสุด: " + formatThaiDateTime(bookingData.endDatetime), "size": "sm", "color": "#666666", "wrap": true }
             ]
           },
           "footer": {
@@ -96,7 +97,7 @@ function createLineReturnRequest(returnData) {
                     "รหัสจอง: " + returnData.bookingId + "\n" +
                     "ผู้จอง: " + returnData.driverName + "\n" +
                     "วัตถุประสงค์: " + returnData.purpose + "\n" +
-                    "เวลาคืน: " + returnData.returnDatetime + "\n" +
+                    "เวลาคืน: " + formatThaiDateTime(returnData.returnDatetime) + "\n" +
                     "--------------------\n" +
                     "⏱️ ชม. ก่อน/หลัง: " + returnData.hoursBefore + " / " + returnData.hoursAfter + "\n" +
                     "🔋 แบต ก่อน/หลัง: " + returnData.batteryBefore + " % "+" / " + returnData.batteryAfter + " %"+"\n" +

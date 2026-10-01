@@ -1,4 +1,5 @@
 import { env } from './shared.js';
+import { formatThaiDateTime } from './date-time.js';
 
 function createGatewayRequest(message, target = 'engineering') {
   return {
@@ -31,8 +32,8 @@ export function createGatewayBookingRequest(bookingData) {
     `รหัสรายการ: ${bookingData.bookingId}`,
     `ผู้ยืม: ${bookingData.driverName}`,
     `วัตถุประสงค์: ${bookingData.purpose}`,
-    `เริ่ม: ${bookingData.startDatetime}`,
-    `สิ้นสุด: ${bookingData.endDatetime}`,
+    `เริ่ม: ${formatThaiDateTime(bookingData.startDatetime)}`,
+    `สิ้นสุด: ${formatThaiDateTime(bookingData.endDatetime)}`,
   ].join('\n');
 
   return createGatewayRequest(message);
@@ -45,7 +46,7 @@ export function createGatewayReturnRequest(returnData, target = 'engineering') {
     `รหัสจอง: ${returnData.bookingId}`,
     `ผู้จอง: ${returnData.driverName}`,
     `วัตถุประสงค์: ${returnData.purpose}`,
-    `เวลาคืน: ${returnData.returnDatetime}`,
+    `เวลาคืน: ${formatThaiDateTime(returnData.returnDatetime)}`,
     '-------------------------',
     '',
     `⏱️ ชม. ก่อน/หลัง: ${returnData.hoursBefore} / ${returnData.hoursAfter}`,
