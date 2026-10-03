@@ -204,7 +204,7 @@ export default function Book() {
         Swal.fire({
           icon: 'success',
           title: 'บันทึกการจองสำเร็จ!',
-          text: `รหัสการจองของคุณคือ: ${result.bookingId}${result.notifications?.some(item => !item.success) ? '\nบันทึกสำเร็จ แต่ส่งข้อความบางปลายทางไม่สำเร็จ กรุณาแจ้งผู้ดูแล' : ''}`,
+          text: `รหัสการจองของคุณคือ: ${result.bookingId}${result.notificationsPending ? '\nระบบกำลังซิงก์ Google Sheets และส่งข้อความแจ้งเตือน' : result.notifications?.some(item => !item.success) ? '\nบันทึกสำเร็จ แต่ส่งข้อความบางปลายทางไม่สำเร็จ กรุณาแจ้งผู้ดูแล' : ''}`,
           confirmButtonColor: '#28a745',
           confirmButtonText: 'กลับสู่หน้าหลัก'
         }).then((res) => {

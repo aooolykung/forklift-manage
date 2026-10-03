@@ -1,5 +1,6 @@
 import { storage, fail } from '../server/shared.js';
 import { bookingNotifications, returnNotifications } from '../server/notifications.js';
+import { waitUntil } from '@vercel/functions';
 
 const actions = new Set(['book', 'book_car', 'return', 'return_car', 'get_booking', 'update_booking', 'get_all_bookings', 'get', 'getAll']);
 
@@ -11,9 +12,22 @@ export default async function handler(req, res) {
   catch { return res.status(400).json({ status: 'error', message: 'Invalid JSON' }); }
   if (!data || !actions.has(data.action)) return res.status(400).json({ status: 'error', message: 'Invalid action' });
   try {
-    const result = await storage(data);
+    const isBooking = ['book', 'book_car'].includes(data.action);
+    const background = isBooking && process.env.VERCEL ? waitUntil : null;
+    const result = await storage(data, background);
     if (result.status === 'success' && result.notificationData) {
-      if (['book', 'book_car'].includes(data.action)) result.notifications = await bookingNotifications(result.notificationData);
+      if (isBooking) {
+        const notifications = bookingNotifications(result.notificationData).catch(error => {
+          console.error('booking_notifications_failed', { bookingId: result.bookingId, message: error.message });
+          return [];
+        });
+        if (background) {
+          background(notifications);
+          result.notificationsPending = true;
+        } else {
+          result.notifications = await notifications;
+        }
+      }
       if (['return', 'return_car'].includes(data.action)) result.notifications = await returnNotifications(result.notificationData);
     }
     delete result.notificationData;

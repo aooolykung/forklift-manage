@@ -74,7 +74,7 @@ function success(booking, extra = {}) {
   return { status: 'success', bookingId: booking.bookingId, data: booking, ...extra };
 }
 
-export async function storage(payload) {
+export async function storage(payload, background = null) {
   if (['get_all_bookings', 'get', 'getAll'].includes(payload.action)) {
     return { status: 'success', data: await latestBookings(), storage: { primary: 'supabase' } };
   }
@@ -84,7 +84,8 @@ export async function storage(payload) {
   }
   if (['book', 'book_car'].includes(payload.action)) {
     const booking = await createBooking(payload);
-    const sheets = await mirrorToSheets({ ...payload, bookingId: booking.bookingId });
+    const mirror = mirrorToSheets({ ...payload, bookingId: booking.bookingId });
+    const sheets = background ? (background(mirror), 'pending') : await mirror;
     return success(booking, { notificationData: booking, storage: { primary: 'supabase', googleSheets: sheets } });
   }
   if (payload.action === 'update_booking') {
